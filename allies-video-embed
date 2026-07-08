@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI, Arial, sans-serif;
+  background:transparent;
+}
+
+.filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:24px;
+}
+
+.filters button{
+  border:2px solid #094876;
+  background:transparent;
+  color:#094876;
+  padding:8px 15px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.filters button.active,
+.filters button:hover{
+  background:#094876;
+  color:white;
+}
+
+.library{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:26px;
+}
+
+.video{
+  text-decoration:none;
+  color:#094876;
+  transition:.25s ease;
+}
+
+.video:hover{
+  transform:translateY(-6px);
+}
+
+.poster{
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  border:3px solid #094876;
+  box-shadow:0 18px 35px rgba(0,0,0,.18);
+  background:transparent;
+}
+
+.poster img{
+  width:100%;
+  display:block;
+  transition:.35s ease;
+}
+
+.video:hover img{
+  transform:scale(1.045);
+}
+
+.year{
+  position:absolute;
+  top:14px;
+  left:14px;
+  background:#F19F01;
+  color:white;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.type{
+  position:absolute;
+  bottom:14px;
+  right:14px;
+  background:#52348D;
+  color:white;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.info{
+  padding:13px 6px 4px;
+}
+
+.title{
+  font-size:20px;
+  font-weight:800;
+  color:#094876;
+  margin-bottom:5px;
+}
+
+.date{
+  color:#D75318;
+  font-weight:700;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="filters" id="filters"></div>
+<div class="library" id="library"></div>
+
+<script>
+const videos = [
+  {
+    title:"Project Grow",
+    year:"2014",
+    date:"January 14, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/52/20140114%20-%20Project%20Grow.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('52')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5Bb67bd77b5a334c758308a6fe9cd52b1c%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Greensleeves",
+    year:"2014",
+    date:"January 14, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/58/20140114%20-%20Greensleeves.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('58')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B802e21faf3e743aa8bf9be8870829f5f%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Allies, Inc. 2009 Gala Slideshow",
+    year:"2009",
+    date:"Uploaded February 17, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/59/20140217%20-%20Allies,%20Inc.%202009%20Gala%20Slideshow.mp4",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('59')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B6aa57483899a44e8891e040f9cf267d5%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Allies on the Move",
+    year:"2014",
+    date:"February 25, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/57/20140225%20-%20Allies%20on%20the%20Move.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('57')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B1c8fdf25ac56463e8c6f151475d114e8%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Residential Services",
+    year:"2014",
+    date:"May 23, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/60/Allies,%20Inc.%20Residential%20Services.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('60')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B3c82928d2115432cba545fc62173f809%5D%5B1%5D_%5B1%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Alex's Story",
+    year:"2014",
+    date:"May 27, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/53/20140527%20-%20Alex's%20Story.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('53')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B2ba39be2060b494e987b786a6185dc98%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Meet Karl",
+    year:"2014",
+    date:"August 15, 2014",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/48/20140815%20-%20Meet%20Karl.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('48')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5Bc669f078a030441d8da8030d7f8c0f63%5D%5B1%5D_%5B3%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"About Allies, Inc.",
+    year:"2015",
+    date:"May 6, 2015",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/47/20150506%20-%20About%20Allies,%20Inc..mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('47')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B689de8056bd04bbeb711afcabe513fa5%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Meet Berlinda",
+    year:"2017",
+    date:"June 7, 2017",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/46/20170607%20-%20Meet%20Berlinda.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('46')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B5ec8a93c213c449eaae2bed6af80b841%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Meet Josie",
+    year:"2017",
+    date:"June 7, 2017",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/56/20170607%20-%20Meet%20Josie.mp4?web=1",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('56')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5B7face5ed7a834b96848fa20f2d7363e5%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  },
+  {
+    title:"Meet David",
+    year:"2017",
+    date:"August 29, 2017",
+    video:"https://woodsorg.sharepoint.com/sites/AlliesHome/Lists/Allies%20Digital%20Archive/Attachments/55/20170829%20-%20Meet%20David.mp4",
+    image:"https://woodsorg.sharepoint.com/sites/AlliesHome/_api/v2.1/sites('397e86cc-e81c-4a84-872b-0ec35dda80bb,a77bbbfc-7bb5-479b-8e38-c67b3951cba1')/lists('8aecd2ca-8ad0-44ef-bdf9-f4cc9acaee09')/items('55')/attachments('Reserved_ImageAttachment_%5B14%5D_%5BThumbnailImage%5D%5B32%5D_%5Bd7f6de9b2e344af392fe78fcb6f9af8f%5D%5B1%5D_%5B2%5D.png')/thumbnails/0/c3000x2000/content?prefer=noredirect%2Cclosestavailablesize"
+  }
+];
+
+const library = document.getElementById("library");
+const filters = document.getElementById("filters");
+
+const years = ["All", ...new Set(videos.map(v => v.year).sort())];
+
+years.forEach(year => {
+  const btn = document.createElement("button");
+  btn.textContent = year;
+  btn.dataset.year = year;
+
+  if(year === "All") btn.classList.add("active");
+
+  btn.onclick = () => {
+    document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render(year);
+  };
+
+  filters.appendChild(btn);
+});
+
+function render(selectedYear = "All"){
+  library.innerHTML = "";
+
+  videos
+    .filter(v => selectedYear === "All" || v.year === selectedYear)
+    .sort((a,b) => Number(a.year) - Number(b.year))
+    .forEach(item => {
+      const card = document.createElement("a");
+      card.className = "video";
+      card.href = item.video;
+      card.target = "_blank";
+      card.rel = "noopener noreferrer";
+
+      card.innerHTML = `
+        <div class="poster">
+          <img src="${item.image}" alt="">
+          <div class="year">${item.year}</div>
+          <div class="type">VIDEO</div>
+        </div>
+        <div class="info">
+          <div class="title">${item.title}</div>
+          <div class="date">${item.date}</div>
+        </div>
+      `;
+
+      library.appendChild(card);
+    });
+}
+
+render();
+</script>
+
+</body>
+</html>
